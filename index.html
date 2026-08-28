@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<title>Saffron food POS - Seffron</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Seff-Tech">
+<link rel="apple-touch-icon" href="logo.jpeg">
+
+<style>
+:root {
+--baby-pink: #fce4ec;
+--premium-pink: #f8bbd0;
+--sky-blue: #e3f2fd;
+--accent-blue: #0288d1;
+--zomato-yellow: #ffd600;
+--dark-bg: #121212;
+--card-bg: #1e1e1e;
+--text-main: #ffffff;
+}
+
+.menu-btn {
+position: absolute;
+right: 15px;
+top: 50%;
+transform: translateY(-50%);
+cursor: pointer;
+display: flex;
+flex-direction: column;
+gap: 4px;
+padding: 5px;
+}
+
+.bar {
+width: 25px;
+height: 3px;
+background-color: #d81b60;
+border-radius: 2px;
+transition: 0.3s;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+body { background-color: #000; min-height: 100vh; overflow-x: hidden; }
+
+.app-container { width: 100%; max-width: 480px; background-color: var(--dark-bg); min-height: 100vh; position: relative; padding-bottom: 120px; margin: 0 auto; }
+
+#login-overlay {
+position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+background: rgba(0,0,0,0.95); backdrop-filter: blur(12px);
+z-index: 9999; display: flex; justify-content: center; align-items: center;
+}
+.login-box {
+background: var(--card-bg); padding: 40px 30px; border-radius: 30px;
+width: 90%; max-width: 350px; text-align: center;
+border: 2px solid var(--zomato-yellow);
+}
+.login-box input {
+width: 100%; padding: 15px; margin-bottom: 15px;
+background: #252525; border: 1px solid #444; border-radius: 12px;
+color: white; font-size: 16px; outline: none;
+}
+.login-btn {
+width: 100%; padding: 15px; background: var(--zomato-yellow);
+border: none; border-radius: 12px; font-weight: bold; cursor: pointer; color: #000;
+}
+
+header { background-color: var(--baby-pink); padding: 10px 0; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; color: #d81b60; }
+header h1 { font-size: 1.4rem; margin: 0; font-weight: bold; }
+
+.search-container { padding: 2px 15px 5px 15px; margin-bottom: 10px; background-color: transparent; width: 100%; }
+.search-wrapper { display: flex; align-items: center; background: white; border-radius: 25px; padding: 8px 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+.search-wrapper input { border: none; outline: none; width: 100%; font-size: 16px; margin-left: 10px; color: #333; }
+
+.category-title { color: var(--zomato-yellow); padding: 1px 15px 5px; font-size: 1.3rem; text-transform: uppercase; border-bottom: 5px solid #333; }
+.menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
+.menu-item { background: var(--card-bg); border-radius: 20px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; min-height: 160px; }
+.menu-item { background: #1e1e1e !important; border-radius: 20px; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; min-height: 160px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.item-name { color: #ffffff !important; font-size: 0.95rem; font-weight: bold; margin-bottom: 5px; }
+.add-btn { background-color: var(--zomato-yellow); border: none; padding: 8px 15px; border-radius: 10px; font-weight: bold; color: #000; margin-top: 10px; cursor: pointer; }
+.qty-selector { display: flex; align-items: center; gap: 10px; margin-top: 10px; color: #000000 !important; font-weight: bold; }
+.qty-selector span {
+color: #ffffff !important;
+font-weight: bold !important;
+}
+
+#menu-container {
+background-color: #fce4ec !important;
+padding-bottom: 20px;
+}
+.category-section:has(.menu-grid:empty),
+.category-section[style*="display: none"] {
+display: none !important;
+}
+
+.ctrl-btn { background-color: var(--zomato-yellow); border: none; width: 30px; height: 30px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; }
+.compact-popup { background-color: var(--sky-blue); padding: 25px; border-radius: 25px; width: 300px; text-align: center; }
+
+#cart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: flex-end; }
+.cart-content { background: var(--sky-blue); width: 100%; max-width: 480px; border-top-left-radius: 30px; border-top-right-radius: 30px; padding: 25px; max-height: 90vh; overflow-y: auto; }
+.billing-box { background: white; border-radius: 20px; padding: 15px; margin-bottom: 15px; color: #000; }
+.cart-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
+.order-form input, .order-form select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
+.place-order-btn { background: #25d366; color: white; width: 100%; padding: 15px; border: none; border-radius: 15px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
+
+.view-cart-trigger { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 440px; background: var(--zomato-yellow); padding: 15px; border-radius: 15px; text-align: center; font-weight: bold; color: #000; z-index: 999; }
+
+/* Sidebar CSS */
+.sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #1a1a1a; color: white; z-index: 10000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+.sidebar.active { left: 0; }
+.sidebar-header { padding: 25px 20px; background: #d81b60; display: flex; justify-content: space-between; align-items: center; }
+.sale-card { background: #2b2b2b; padding: 20px; border-radius: 15px; margin: 15px; border-left: 5px solid #ffd600; }
+#sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; }
+.login-box h2 {
+color: white;
+}
+</style>
+</head>
+<body>
+
+<div class="app-container">
+<header style="position: relative;">
+<h1>SAFFRON FOOD</h1>
+
+<div id="header-status-msg" style="display: none; background: #ff3b30; color: white; font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 12px; margin: 5px auto 0; width: fit-content; text-transform: uppercase; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+🚨 Restaurant Closed Now! Will open 10am
+</div>
+
+<div class="menu-btn">
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+</div>
+</header>
+
+<div id="sidebar" class="sidebar">
+<div class="sidebar-header">
+<h3 style="color:white; margin:0;">Sales Dashboard</h3>
+<span class="close-btn" style="color:white; cursor:pointer; font-size:24px;" onclick="toggleSidebar()">✕</span>
+</div>
+<div class="sidebar-content" style="padding:20px;">
+<div class="outlet-status-card" style="display: flex; justify-content: space-between; align-items: center; background: #2b2b2b; padding: 12px 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+<div style="display: flex; flex-direction: column;">
+<span style="color:#ffffff; font-size:14px; font-weight: bold; margin-bottom: 2px;">Saffron Food</span>
+<span style="color:#888888; font-size:11px;">Outlet Info | Sector 12</span>
+</div>
+
+<label style="position: relative; display: flex; align-items: center; background: #4cd964; padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: 0.3s;" id="status-bg">
+<span id="status-label-text" style="color: white; font-size: 13px; font-weight: bold; margin-right: 8px; user-select: none;">Online</span>
+<input type="checkbox" id="store-toggle" checked style="display: none;" onchange="handleStoreToggle()">
+<div style="width: 16px; height: 16px; background: white; border-radius: 50%; transition: 0.3s; transform: translateX(0);" id="toggle-circle"></div>
+</label>
+</div>
+<div class="sale-card">
+<span style="color:#aaa; font-size:12px;">DTD</span>
+<h2 id="dtd-value" style="color:#ffd600; margin:5px 0 0 0;">₹0</h2>
+</div>
+<div class="sale-card">
+<span style="color:#aaa; font-size:12px;">MTD</span>
+<h2 id="mtd-value" style="color:#ffd600; margin:5px 0 0 0;">₹0</h2>
+</div>
+</div>
+</div>
+<div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<div class="search-container">
+<div class="search-wrapper">
+<span>🔍</span>
+<input type="text" id="menu-search" placeholder="Search for dishes..." onkeyup="filterMenu()">
+</div>
+</div>
+
+<div id="menu-container"></div>
+<div style="text-align:center; color:#555; padding:20px;">Powered by SEFFRON</div>
+<!-- 🚨 1. HALF/FULL POPUP BOX (Vaisa hi rahega) -->
+<div id="size-popup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; justify-content: center; align-items: flex-end; transition: opacity 0.3s ease;">
+<div style="background: #ffffff; padding: 24px 20px; border-radius: 24px 24px 0 0; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 -10px 25px rgba(0,0,0,0.15); box-sizing: border-box; animation: slideUpNav 0.3s ease-out; margin-bottom: 60px;">
+<div style="width: 40px; height: 5px; background: #e0e0e0; border-radius: 10px; margin: 0 auto 15px auto;"></div>
+<h3 id="popup-item-name" style="margin-top: 0; margin-bottom: 20px; color: #1a1a1a; font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700;">Select Size</h3>
+<div id="size-options-list" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;"></div>
+<button onclick="document.getElementById('size-popup').style.display='none'" style="width: 100%; background: #ff4757; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer;">Close</button>
+</div>
+</div>
+
+<!-- 📜 PREMIUM PINK & WHITE FULL SCREEN HISTORY PAGE -->
+<div id="history-popup" style="display: none; position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: 100vh; background-color: #ffffff; z-index: 10002; flex-direction: column; overflow-y: auto; padding-bottom: 70px; font-family: sans-serif;">
+  <header style="background: var(--baby-pink); padding: 15px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; color: #d81b60; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+    <span onclick="document.getElementById('history-popup').style.display='none'; document.body.style.overflow='auto';" style="font-size: 24px; cursor: pointer; font-weight: bold; color: #d81b60;">←</span>
+    <h2 style="font-size: 1.3rem; font-weight: bold; margin: 0; flex-grow: 1; text-align: center; margin-right: 24px;">Order History</h2>
+  </header>
+
+  <div style="padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #ffffff; flex-grow: 1;">
+    
+    <!-- History Items Container -->
+    <div id="history-items-list" style="display: flex; flex-direction: column; gap: 15px;">
+      <!-- Cards will load here via JavaScript -->
+    </div>
+  </div>
+</div>
+
+
+<style>
+@keyframes slideUpNav {
+from { transform: translateY(100%); }
+to { transform: translateY(0); }
+}
+#cart-modal, .cart-modal, #cart-container, .cart-container, [id*="cart"], [class*="cart"] {
+bottom: 60px !important;
+height: auto !important;
+max-height: calc(100% - 70px) !important;
+overflow-y: auto !important;
+}
+/* Premium History Card Style */
+.history-card {
+background: #f9f9f9; border: 1px solid #eee; border-radius: 14px; padding: 12px; font-family: sans-serif;
+}
+</style>
+
+<div class="mobile-only-bar" id="smartBottomNav" style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 450px; height: 60px; background-color: #fbc2c8; z-index: 10005; display: flex; align-items: center; justify-content: space-around; box-sizing: border-box; box-shadow: 0 -4px 12px rgba(0,0,0,0.08); transition: background-color 0.2s ease;">
+  <a href="#" onclick="showScreen('home'); return false;" style="text-decoration: none; color: #1a1a1a; text-align: center; font-size: 11px; font-family: sans-serif; font-weight: bold; flex: 1;">
+    <span style="font-size: 22px; display: block; margin-bottom: 2px;">🏠</span>Home
+  </a>
+  <a href="#" onclick="openHistoryPopup(); return false;" style="text-decoration: none; color: #1a1a1a; text-align: center; font-size: 11px; font-family: sans-serif; font-weight: bold; flex: 1;">
+    <span style="font-size: 22px; display: block; margin-bottom: 2px;">🕒</span>History
+  </a>
+  <a href="#" onclick="toggleCart(true); return false;" style="text-decoration: none; color: #1a1a1a; text-align: center; font-size: 11px; font-family: sans-serif; font-weight: bold; flex: 1;">
+    <span style="font-size: 22px; display: block; margin-bottom: 2px;">🛒</span>Cart (<span id="cart-count">0</span>)
+  </a>
+  <a href="#" onclick="toggleProfileScreen(true); return false;" style="text-decoration: none; color: #1a1a1a; text-align: center; font-size: 11px; font-family: sans-serif; font-weight: bold; flex: 1;">
+    <span style="font-size: 22px; display: block; margin-bottom: 2px;">👤</span>Profile
+  </a>
+</div>
+
+
+<!-- 🚨 4. AUTOMATIC LOCALSTORAGE & POPUP JAVASCRIPT LOGIC -->
+<script>
+async function openHistoryPopup() {
+  showScreen('other');
+  var historyList = document.getElementById('history-items-list');
+  historyList.innerHTML = '<div style="text-align:center; color:#777; margin-top:40px; font-family:sans-serif;">⏳ Loading your premium history...</div>';
+  
+  // Full screen flex show
+  var popup = document.getElementById('history-popup');
+  popup.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  var savedProfile = JSON.parse(localStorage.getItem('saffron_profile')) || {};
+  var customerPhone = savedProfile.phone ? savedProfile.phone.trim() : "";
+
+  if (!customerPhone) {
+    var pInp = document.getElementById('cust-phone');
+    if (pInp && pInp.value) {
+      customerPhone = pInp.value.trim();
+    }
+  }
+
+  if (!customerPhone) {
+    historyList.innerHTML = `
+      <div style="text-align:center; color:#777; margin-top:40px; padding: 0 20px; font-family:sans-serif;">
+        <p style="margin-bottom:15px; font-weight:500;">🔒 Please fill your Profile first with your phone number to check live history!</p>
+        <button onclick="document.getElementById('history-popup').style.display='none'; toggleProfileScreen(true);" style="background:var(--zomato-yellow); border:none; padding:12px 25px; border-radius:10px; font-weight:bold; cursor:pointer; width:100%;">Open Profile 👤</button>
+      </div>`;
+    return;
+  }
+
+  try {
+    var res = await fetch(G_SCRIPT_URL);
+    var data = await res.json();
+    var allOrders = Array.isArray(data) ? data : (data.orders || []);
+    
+    var userOrders = allOrders.filter(function(order) {
+      var sheetPhone = order.phone ? String(order.phone).replace(/[^0-9]/g, '') : '';
+      var searchPhone = customerPhone.replace(/[^0-9]/g, '');
+      return sheetPhone.includes(searchPhone) || searchPhone.includes(sheetPhone);
+    });
+
+    if (userOrders.length === 0) {
+      historyList.innerHTML = '<div style="text-align:center; color:#777; margin-top:40px; font-family:sans-serif;">No orders found for your number! 🍔</div>';
+    } else {
+      historyList.innerHTML = '';
+      
+      for (var i = userOrders.length - 1; i >= 0; i--) {
+        var order = userOrders[i];
+        var card = document.createElement('div');
+        
+        // Premium Premium Card Styling with Pink Accents
+        card.style.background = '#ffffff';
+        card.style.border = '1px solid #f8bbd0';
+        card.style.borderRadius = '16px';
+        card.style.padding = '15px';
+        card.style.boxShadow = '0 4px 12px rgba(216,27,96,0.04)';
+        card.style.display = 'flex';
+        card.style.flexDirection = 'column';
+        card.style.gap = '8px';
+
+        var orderDate = order.date || "Recent Order";
+        var orderType = order.type || "Dining";
+        var typeColor = orderType === "Home Delivery" ? "#0288d1" : "#e65100";
+        var typeBg = orderType === "Home Delivery" ? "#e3f2fd" : "#fff3e0";
+
+                card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed #f5f5f5; padding-bottom:8px;">
+            <span style="font-size:12px; color:#666; font-weight:500;">📅 ${orderDate}</span>
+            <span style="color:${typeColor}; background:${typeBg}; font-weight:bold; font-size:11px; padding:3px 8px; border-radius:12px; text-transform:uppercase;">${orderType}</span>
+          </div>
+          <div style="font-weight:600; color:#1a1a1a; font-size:14px; line-height:1.4; padding:5px 0;">
+            🍔 ${order.items}
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f5f5f5; padding-top:8px; margin-top:2px;">
+            <span style="font-size:12px; color:#888;">Method: ${order.payment || 'Cash'}</span>
+            <span style="font-weight:bold; color:#d81b60; font-size:15px;">₹${order.total}</span>
+          </div>
+        `;
+
+        historyList.appendChild(card);
+      }
+    }
+  } catch (e) {
+    console.log("History load error:", e);
+    historyList.innerHTML = '<div style="text-align:center; color:#ff3b30; margin-top:40px; font-family:sans-serif;">⚠️ Connection Error! Please try again.</div>';
+  }
+}
+
+// --- Function: Jab customer Order Place kare, tab automatic history me save ho jaye ---
+function setupOrderTracking() {
+// Aapki website ke main 'Place Order' button ko target karna
+var placeOrderBtn = document.querySelector('.place-order-btn, #place-order, [onclick*="sendWhatsApp"], .checkout-btn');
+
+if (placeOrderBtn) {
+placeOrderBtn.addEventListener('click', function() {
+try {
+// Aapke cart elements se text nikalna (IDs aapki website ke elements ke matching hain)
+var cartItemsText = "";
+var allItems = document.querySelectorAll('.cart-item, .cart-items div, #cart-items div');
+
+if(allItems.length > 0) {
+var itemsArray = [];
+allItems.forEach(function(item) {
+if(item.innerText.trim() !== "") itemsArray.push(item.innerText.trim().split('\n')[0]);
+});
+cartItemsText = itemsArray.join(', ');
+} else {
+cartItemsText = "Delicious Food Items";
+}
+
+var totalAmountElement = document.querySelector('#total-price, #cart-total, .total-amount, #total');
+var totalAmount = totalAmountElement ? totalAmountElement.innerText.replace(/[^0-9]/g, '') : '0';
+
+if (totalAmount === '0' || totalAmount === '') return; // Khali cart save na ho
+
+var currentDate = new Date().toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+var newOrder = {
+date: currentDate,
+items: cartItemsText,
+total: totalAmount
+};
+
+var currentOrders = JSON.parse(localStorage.getItem('saffron_orders')) || [];
+currentOrders.push(newOrder);
+localStorage.setItem('saffron_orders', JSON.stringify(currentOrders));
+} catch (e) {
+console.log("History save error:", e);
+}
+});
+}
+}
+
+// Automatically active functions when page loads
+setTimeout(setupOrderTracking, 1500);
+
+// Cart check interval for auto background color shift (Pichla gap fix logic)
+setInterval(function() {
+var cartPopup = document.querySelector('[class*="cart-modal"], [id*="cart-modal"], .cart-container, #cart-container, [id*="cart-popup"]');
+var navBar = document.getElementById('smartBottomNav');
+if (cartPopup && (cartPopup.style.display === 'block' || cartPopup.style.display === 'flex' || window.getComputedStyle(cartPopup).display !== 'none')) {
+if(cartPopup.offsetHeight > 200) {
+navBar.style.backgroundColor = '#ffffff';
+navBar.style.borderTop = '1px solid #eee';
+}
+} else {
+navBar.style.backgroundColor = '#fbc2c8';
+navBar.style.borderTop = 'none';
+}
+}, 300);
+</script>
+
+<script>
+// जब ऑर्डर समरी (Cart) खुले, तो नीचे की बार को छुपाने का ऑटोमैटिक लॉजिक
+setInterval(function() {
+var cartPopup = document.querySelector('[class*="cart"], [id*="cart"]');
+var navBar = document.getElementById('smartBottomNav');
+
+// अगर कार्ट स्क्रीन पर दिख रहा है और उसका display 'none' नहीं है
+if (cartPopup && cartPopup.style.display !== 'none' && cartPopup.style.visibility !== 'hidden' && window.getComputedStyle(cartPopup).display !== 'none') {
+// यह चेक करने के लिए कि कहीं यह हमारा छोटा कार्ट बटन तो नहीं है
+if(cartPopup.offsetHeight > 200) {
+navBar.style.transform = 'translate(-50%, 100%)'; // बार नीचे छिप जाएगी
+}
+} else {
+navBar.style.transform = 'translate(-50%, 0)'; // बार वापस आ जाएगी
+}
+}, 300);
+</script>
+
+
+</div>
+<div id="cart-modal" class="modal-overlay" onclick="toggleCart(false)">
+<div class="cart-content" onclick="event.stopPropagation()">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+<h2 style="color:#0288d1;">ORDER SUMMARY</h2>
+<button onclick="toggleCart(false)" style="background:none; border:none; font-size:1.5rem;">✕</button>
+</div>
+<div class="billing-box" id="cart-items-container"></div>
+<div class="order-form">
+<input type="text" id="cust-name" placeholder="Customer Name">
+<input type="tel" id="cust-phone" placeholder="WhatsApp Number">
+<select id="order-type" onchange="toggleAddress()">
+<option value="Dining">Dining</option>
+<option value="Home Delivery">Home Delivery</option>
+</select>
+<input type="text" id="cust-address" placeholder="Delivery Address" style="display:none;">
+<select id="payment-method">
+<option value="Cash">Cash</option>
+<option value="Online">Online</option>
+</select>
+<div style="text-align:right; font-weight:bold; font-size:1.4rem; margin:15px 0; color:#000;">TOTAL: ₹<span id="grand-total">0</span></div>
+<button class="place-order-btn" onclick="placeOrder()">Place Order ❣️</button>
+</div>
+</div>
+</div>
+
+<script>
+const G_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxW1YSTEivO58w8rEsFHrHrDmCAIpZOyw5rznT9Bul07Mo0DDEVpv0b2azvXlQ0t-qO/exec';
+
+window.onload = function() {
+renderMenu();
+};
+function toggleAddress() {
+const orderType = document.getElementById('order-type').value;
+const addressInput = document.getElementById('cust-address');
+
+if (orderType === 'Home Delivery') {
+addressInput.style.display = 'block'; // एड्रेस बॉक्स दिखाएगा
+} else {
+addressInput.style.display = 'none';  // एड्रेस बॉक्स छुपाएगा
+addressInput.value = '';             // खाली कर देगा
+}
+}
+
+const menuData = [
+{ category: "APPETIZERS", items: [
+{ id: 1, name: "Aloo tikki burger", price: 39, image: "https://unsplash.com" },
+{ id: 2, name: "Classic veg burger", price: 49, image: "https://unsplash.com" },
+{ id: 3, name: "Veg cheese burger", price: 59, image: "https://unsplash.com" },
+{ id: 4, name: "Double patty veg burger", price: 79, image: "https://unsplash.com" },
+{ id: 5, name: "Saffron Burger", price: 99, image: "https://unsplash.com" },
+{ id: 6, name: "French fries", priceHalf: 45, priceFull: 79, image: "https://unsplash.com" },
+{ id: 7, name: "Chilli potato", priceHalf: 59, priceFull: 109, image: "https://unsplash.com" },
+{ id: 8, name: "Honey chilli potato", priceHalf: 69, priceFull: 119, image: "https://unsplash.com" },
+{ id: 9, name: "Plain Veg Noodles", priceHalf: 59, priceFull: 109, image: "https://unsplash.com" },
+{ id: 10, name: "Veg Hakka Noodles", priceHalf: 69, priceFull: 119, image: "https://unsplash.com" },
+{ id: 11, name: "Veg Schezwan Noodles", priceHalf: 79, priceFull: 139, image: "https://unsplash.com" },
+{ id: 12, name: "Veg Chilli Garlic Noodle", priceHalf: 89, priceFull: 159, image: "https://unsplash.com" }
+]},
+{ category: "SANDWICHES", items: [
+{ id: 13, name: "Aloo Grilled sandwich", price: 49, image: "https://unsplash.com" },
+{ id: 14, name: "Veg grilled sandwich", price: 69, image: "https://unsplash.com" },
+{ id: 15, name: "Veg cheese grilled sandwich", price: 79, image: "https://unsplash.com" },
+{ id: 16, name: "Cheese Corn Grilled Sandwich", price: 89, image: "https://unsplash.com" },
+{ id: 17, name: "Paneer & cheese Grilled Sandwich", price: 99, image: "https://unsplash.com" }
+]},
+{ category: "PASTA", items: [
+{ id: 18, name: "veg Red souce pasta", price: 59, image: "https://unsplash.com" },
+{ id: 19, name: "veg white souce pasta", price: 69, image: "https://unsplash.com" }
+]},
+{ category: "MOMOS", items: [
+{ id: 20, name: "veg momos steam", priceHalf: 39, priceFull: 69, image: "https://unsplash.com" },
+{ id: 21, name: "veg momos fried", priceHalf: 49, priceFull: 79, image: "https://unsplash.com" },
+{ id: 22, name: "paneer momos steam", priceHalf: 49, priceFull: 89, image: "https://unsplash.com" },
+{ id: 23, name: "paneer momos fried", priceHalf: 69, priceFull: 119, image: "https://unsplash.com" }
+]},
+{ category: "PARATHA'S", items: [
+{ id: 24, name: "Aloo paratha (2pc)", price: 49, image: "https://unsplash.com" },
+{ id: 25, name: "Aloo pyaz paratha (2pc)", price: 59, image: "https://unsplash.com" },
+{ id: 26, name: "Gobhi paratha (2pc)", price: 69, image: "https://unsplash.com" },
+{ id: 27, name: "paneer paratha (2pc)", price: 79, image: "https://unsplash.com" },
+{ id: 28, name: "Plain curd", price: 20, image: "https://unsplash.com" },
+{ id: 29, name: "Boondi Raita", price: 39, image: "https://unsplash.com" },
+{ id: 30, name: "Sweet lassi", price: 49, image: "https://unsplash.com" }
+]},
+{ category: "MAGGI", items: [
+{ id: 31, name: "Plain maggi", price: 39, image: "https://unsplash.com" },
+{ id: 32, name: "Veg maggi", price: 49, image: "https://unsplash.com" }
+]},
+{ category: "RICE", items: [
+{ id: 33, name: "Veg fried rice", priceHalf: 59, priceFull: 109, image: "https://unsplash.com" },
+{ id: 34, name: "Classic spicy veg fried rice", priceHalf: 69, priceFull: 119, image: "https://unsplash.com" },
+{ id: 35, name: "veg schezwan fried rice", priceHalf: 79, priceFull: 149, image: "https://unsplash.com" }
+]},
+{ category: "BEVERAGES", items: [
+{ id: 36, name: "Cold coffee", price: 59, image: "https://unsplash.com" },
+{ id: 37, name: "Sweet lassi", price: 49, image: "https://unsplash.com" }
+]}
+];
+
+let cart = [];
+
+function renderMenu() {
+  const container = document.getElementById('menu-container');
+  container.innerHTML = menuData.map(section => `
+    <h2 class="category-title">${section.category}</h2>
+    <div class="menu-grid">${section.items.map(item => `
+      <div class="menu-item" style="gap: 8px; display: flex; flex-direction: column; justify-content: space-between;">
+        <!-- 📸 PREMIUM FOOD IMAGE BOX -->
+        <div style="width: 100%; height: 110px; border-radius: 14px; overflow: hidden; background: #2d2d2d; position: relative;">
+          <img src="${item.image || 'https://unsplash.com'}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="item-name" style="margin-top: 4px;">${item.name}</div>
+        <div class="price-text" style="color: #ffffff !important; font-weight: bold; font-size: 0.9rem;">${item.priceHalf ? `H: ₹${item.priceHalf} / F: ₹${item.priceFull}` : `₹${item.price}`}</div>
+       <div id="ctrls-${item.id}"><button class="add-btn" onclick="handleItemClick(${item.id})">Add Item</button></div>
+      </div>`).join('')}</div>`).join('');
+}
+
+function handleItemClick(id) {
+let itemRef; menuData.forEach(cat => { const found = cat.items.find(i => i.id === id); if(found) itemRef = found; });
+if (itemRef.priceHalf) openSizePopup(itemRef); else addToCart(id, 'Normal');
+}
+
+function openSizePopup(item) {
+document.getElementById('popup-item-name').innerText = item.name;
+document.getElementById('size-options-list').innerHTML = `
+<div style="padding:15px; background:white; border-radius:10px; margin-bottom:10px; font-weight:bold; cursor:pointer;" onclick="selectFromPopup(${item.id}, 'Half')">Half - ₹${item.priceHalf}</div>
+<div style="padding:15px; background:white; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="selectFromPopup(${item.id}, 'Full')">Full - ₹${item.priceFull}</div>`;
+document.getElementById('size-popup').style.display = 'flex';
+}
+
+function selectFromPopup(id, size) { addToCart(id, size); closeSizePopup(); }
+function closeSizePopup() { document.getElementById('size-popup').style.display = 'none'; }
+
+function addToCart(id, size) {
+let itemRef; menuData.forEach(cat => { const found = cat.items.find(i => i.id === id); if(found) itemRef = found; });
+const price = size === 'Half' ? itemRef.priceHalf : (size === 'Full' ? itemRef.priceFull : itemRef.price);
+const cartKey = `${id}-${size}`;
+const existing = cart.find(c => c.cartKey === cartKey);
+if (existing) existing.qty++; else cart.push({ ...itemRef, size, price, qty: 1, cartKey });
+updateItemControls(id, size); updateCartUI();
+}
+
+function updateItemControls(id, size) {
+const container = document.getElementById(`ctrls-${id}`);
+if(!container) return;
+const cartKey = `${id}-${size}`;
+const itemInCart = cart.find(c => c.cartKey === cartKey);
+if (itemInCart && itemInCart.qty > 0) {
+container.innerHTML = `<div class="qty-selector"><button class="ctrl-btn" onclick="updateQty('${cartKey}', -1)">-</button><span style="color:white;">${itemInCart.qty}</span><button class="ctrl-btn" onclick="updateQty('${cartKey}', 1)">+</button></div>`;
+} else {
+container.innerHTML = `<button class="add-btn" onclick="handleItemClick(${id})">Add Item</button>`;
+}
+}
+
+function updateQty(cartKey, delta) {
+const index = cart.findIndex(c => c.cartKey === cartKey);
+if (index > -1) {
+cart[index].qty += delta;
+const itemId = cart[index].id; const size = cart[index].size;
+if (cart[index].qty <= 0) cart.splice(index, 1);
+updateItemControls(itemId, size);
+}
+updateCartUI();
+}
+
+function updateCartUI() {
+const container = document.getElementById('cart-items-container');
+let total = 0, count = 0;
+
+if (cart.length === 0) {
+if (container) container.innerHTML = "<p style='color:#666; text-align:center; padding:20px;'>Cart is empty.</p>";
+} else {
+if (container) {
+container.innerHTML = cart.map(item => {
+const subtotal = item.price * item.qty;
+total += subtotal;
+count += item.qty;
+
+const sizeText = item.size !== 'Normal' ? ' (' + item.size + ')' : '';
+
+return `
+<div class="cart-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+<div style="flex: 1; color: #000; font-weight: 500;">
+${item.name}${sizeText}
+</div>
+
+<!-- यहाँ क्वांटिटी बदलने के लिए + / - बटन्स -->
+<div style="display: flex; align-items: center; gap: 8px; margin-right: 15px;">
+<button onclick="updateQty('${item.cartKey}', -1)" style="background: #ffd600; border: none; width: 25px; height: 25px; border-radius: 5px; font-weight: bold; cursor: pointer; color: #000; font-size: 1rem; display: flex; align-items: center; justify-content: center;">-</button>
+<span style="font-weight: bold; color: #000; min-width: 15px; text-align: center;">${item.qty}</span>
+<button onclick="updateQty('${item.cartKey}', 1)" style="background: #ffd600; border: none; width: 25px; height: 25px; border-radius: 5px; font-weight: bold; cursor: pointer; color: #000; font-size: 1rem; display: flex; align-items: center; justify-content: center;">+</button>
+</div>
+
+<div style="color: #000; font-weight: bold; min-width: 60px; text-align: right;">
+₹${subtotal}
+</div>
+</div>`;
+}).join('');
+}
+}
+
+document.getElementById('cart-count').innerText = count;
+document.getElementById('grand-total').innerText = total;
+}
+
+function filterMenu() {
+const query = document.getElementById('menu-search').value.toLowerCase();
+
+// 1. पहले सारे आइटम्स को सर्च क्वेरी के हिसाब से छुपाएं या दिखाएं
+const items = document.querySelectorAll('.menu-item');
+items.forEach(item => {
+const name = item.querySelector('.item-name').innerText.toLowerCase();
+item.style.display = name.includes(query) ? "flex" : "none";
+});
+
+// 2. अब चेक करें कि किस कैटेगरी में एक भी आइटम दिखाई दे रहा है या नहीं
+const categoryTitles = document.querySelectorAll('.category-title');
+categoryTitles.forEach(title => {
+// हर टाइटल के ठीक आगे वाला ग्रिड बॉक्स ढूंढें जिसमें आइटम्स रखे हैं
+const nextGrid = title.nextElementSibling;
+if (nextGrid && nextGrid.classList.contains('menu-grid')) {
+// चेक करें कि क्या उस ग्रिड के अंदर कोई भी आइटम 'flex' (दिखने वाला) है
+const hasVisibleItems = Array.from(nextGrid.children).some(item => item.style.display !== 'none');
+
+// अगर एक भी आइटम नहीं दिख रहा, तो पूरी कैटेगरी हेडिंग को छुपा दें
+title.style.display = hasVisibleItems ? "block" : "none";
+nextGrid.style.display = hasVisibleItems ? "grid" : "none";
+}
+});
+}
+function handleStoreToggle() {
+const toggle = document.getElementById('store-toggle');
+const statusBg = document.getElementById('status-bg');
+const labelText = document.getElementById('status-label-text');
+const circle = document.getElementById('toggle-circle');
+
+if (toggle && statusBg && labelText && circle) {
+if (toggle.checked) {
+statusBg.style.background = '#4cd964'; // हरा रंग (Online)
+labelText.innerText = "Online";
+circle.style.transform = "translateX(0)";
+} else {
+statusBg.style.background = '#777777'; // ग्रे रंग (Offline)
+labelText.innerText = "Offline";
+circle.style.transform = "translateX(4px)"; // स्विच इफेक्ट
+}
+}
+}
+
+
+function toggleCart(show) {
+
+document.getElementById('cart-modal').style.display = show ? 'flex' : 'none';
+
+if (show) {
+document.body.style.overflow = 'hidden';
+} else {
+document.body.style.overflow = 'auto';
+}
+
+}
+async function toggleSidebar() {
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebar-overlay');
+
+sidebar.classList.toggle('active');
+overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
+
+if (sidebar.classList.contains('active')) {
+document.getElementById('dtd-value').innerText = "Loading...";
+document.getElementById('mtd-value').innerText = "Loading...";
+try {
+const res = await fetch(G_SCRIPT_URL);
+const data = await res.json();
+document.getElementById('dtd-value').innerText = `₹${data.dtd.toLocaleString('en-IN')}`;
+document.getElementById('mtd-value').innerText = `₹${data.mtd.toLocaleString('en-IN')}`;
+} catch (e) {
+document.getElementById('dtd-value').innerText = "Error";
+document.getElementById('mtd-value').innerText = "Error";
+}
+}
+}
+
+function placeOrder() {
+  const toggleBtn = document.getElementById('store-toggle');
+  if (toggleBtn && !toggleBtn.checked) {
+    alert("🚨 Sorry, Restaurant is Closed Right Now! Will open at 10am.");
+    return;
+  }
+  if (cart.length === 0) {
+    alert("Your cart is empty!");
+    return;
+  }
+  
+  const nInp = document.getElementById('cust-name');
+  const pInp = document.getElementById('cust-phone');
+  const tInp = document.getElementById('order-type');
+  const aInp = document.getElementById('cust-address');
+  const mInp = document.getElementById('payment-method');
+  const grandTotal = document.getElementById('grand-total').innerText;
+
+  if (!pInp || !nInp || !pInp.value || !nInp.value) { 
+    alert("Fill Name & Phone!"); 
+    return; 
+  }
+
+  // Exact JSON key structure to match your sheet columns
+  const orderData = {
+    name: nInp.value.trim(), 
+    phone: pInp.value.trim(), 
+    type: tInp.value,
+    items: cart.map(i => `${i.name}(${i.size || 'Normal'})x${i.qty}`).join(", "),
+    total: grandTotal, 
+    payment: mInp.value,
+    address: (tInp.value === 'Home Delivery' && aInp) ? aInp.value.trim() : "N/A"
+  };
+
+  // Sending directly to your newly deployed Google Sheet Web App
+  fetch(G_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(orderData)
+  }).catch(e => console.log("Google Sheet Secure Send Error:", e));
+
+  // WhatsApp Format Message Building
+  let msg = `*SAFFRON FOOD*\n\n*Order Summary:*\n`;
+  cart.forEach(item => {
+    msg += `* ${item.name}${item.size !== 'Normal' ? ' (' + item.size + ')' : ''} x${item.qty} = ₹${item.price * item.qty}\n`;
+  });
+
+  msg += `\n*TOTAL: ₹${grandTotal}*\n\n`;
+  msg += `👤 ${nInp.value}\n`;
+  msg += `🍽️ ${tInp.value}\n`;
+  if(tInp.value === 'Home Delivery' && aInp && aInp.value) {
+    msg += `📍 ${aInp.value}\n`;
+  }
+  msg += `💳 ${mInp.value}`;
+
+  window.open(`https://wa.me/7618003177?text=${encodeURIComponent(msg)}`, '_blank');
+  
+  setTimeout(() => {
+    cart = [];
+    location.reload();
+  }, 1000);
+}
+// --- Function: Manage Screens Switching ---
+function showScreen(screenType) {
+  if(document.getElementById('profile-screen')) document.getElementById('profile-screen').style.display = 'none';
+  if(document.getElementById('history-popup')) document.getElementById('history-popup').style.display = 'none';
+  if(document.getElementById('cart-modal')) document.getElementById('cart-modal').style.display = 'none';
+  
+  document.body.style.overflow = 'auto';
+
+  if (screenType === 'home') {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+}
+
+// --- Function: Profile Screen Toggle (Open/Close) ---
+function toggleProfileScreen(show) {
+  if (show) {
+    showScreen('other');
+  }
+  const profileScreen = document.getElementById('profile-screen');
+  if (profileScreen) {
+    profileScreen.style.display = show ? 'flex' : 'none';
+    document.body.style.overflow = show ? 'hidden' : 'auto';
+  }
+}
+
+// --- Function: Save Profile Details to LocalStorage ---
+function saveProfileDetails() {
+  const name = document.getElementById('prof-name').value.trim();
+  const phone = document.getElementById('prof-phone').value.trim();
+  const address = document.getElementById('prof-address').value.trim();
+
+  if (!name || !phone) {
+    alert("Please fill your Name and WhatsApp Number!");
+    return;
+  }
+
+  const profileData = { name: name, phone: phone, address: address };
+  localStorage.setItem('saffron_profile', JSON.stringify(profileData));
+  
+  autoFillCheckoutFields();
+  
+  alert("Profile saved successfully! 💾");
+  toggleProfileScreen(false);
+}
+
+// --- Function: Auto-fill fields from LocalStorage on page load ---
+function autoFillCheckoutFields() {
+  const savedProfile = JSON.parse(localStorage.getItem('saffron_profile'));
+  if (savedProfile) {
+    if(document.getElementById('prof-name')) document.getElementById('prof-name').value = savedProfile.name;
+    if(document.getElementById('prof-phone')) document.getElementById('prof-phone').value = savedProfile.phone;
+    if(document.getElementById('prof-address')) document.getElementById('prof-address').value = savedProfile.address;
+
+    if(document.getElementById('cust-name')) document.getElementById('cust-name').value = savedProfile.name;
+    if(document.getElementById('cust-phone')) document.getElementById('cust-phone').value = savedProfile.phone;
+    if(document.getElementById('cust-address')) document.getElementById('cust-address').value = savedProfile.address;
+  }
+}
+
+// Run auto-fill when the page finishes loading
+window.addEventListener('DOMContentLoaded', autoFillCheckoutFields);
+
+</script>
+<!-- 👤 PREMIUM PINK & WHITE FULL SCREEN PROFILE PAGE -->
+<div id="profile-screen" style="display: none; position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: 100vh; background-color: #ffffff; z-index: 10002; flex-direction: column; overflow-y: auto; padding-bottom: 70px; font-family: sans-serif;">
+  <header style="background: var(--baby-pink); padding: 15px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; color: #d81b60; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+    <span onclick="toggleProfileScreen(false)" style="font-size: 24px; cursor: pointer; font-weight: bold; color: #d81b60;">←</span>
+    <h2 style="font-size: 1.3rem; font-weight: bold; margin: 0; flex-grow: 1; text-align: center; margin-right: 24px;">My Profile</h2>
+  </header>
+
+  <div style="padding: 25px 20px; display: flex; flex-direction: column; gap: 20px; background: #ffffff;">
+    <div style="text-align: center; margin-bottom: 10px;">
+      <span style="font-size: 60px; display: block; margin-bottom: 10px;">👤</span>
+      <p style="color: #666; font-size: 14px; font-weight: 500;">Save details for super fast ordering</p>
+    </div>
+
+    <div class="order-form" style="display: flex; flex-direction: column; gap: 15px;">
+      <div>
+        <label style="color: #d81b60; font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px; text-transform: uppercase;">Your Name</label>
+        <input type="text" id="prof-name" placeholder="Enter Full Name" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; background: #fff; color: #000; margin: 0;">
+      </div>
+
+      <div>
+        <label style="color: #d81b60; font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px; text-transform: uppercase;">WhatsApp Number</label>
+        <input type="tel" id="prof-phone" placeholder="Enter 10-Digit Number" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; background: #fff; color: #000; margin: 0;">
+      </div>
+
+      <div>
+        <label style="color: #d81b60; font-size: 12px; font-weight: bold; display: block; margin-bottom: 5px; text-transform: uppercase;">Delivery Address</label>
+        <input type="text" id="prof-address" placeholder="Enter Complete Address" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; background: #fff; color: #000; margin: 0;">
+      </div>
+
+      <button onclick="saveProfileDetails()" style="background: var(--zomato-yellow); color: #000; font-weight: bold; width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 1rem; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">Save Profile Details 💾</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
