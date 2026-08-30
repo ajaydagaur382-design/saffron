@@ -454,63 +454,93 @@ addressInput.value = '';             // खाली कर देगा
 }
 
 const menuData = [
-{ category: "APPETIZERS", items: [
-{ id: 1, name: "Aloo tikki burger", price: 39, image: "https://unsplash.com" },
-{ id: 2, name: "Classic veg burger", price: 49, image: "https://unsplash.com" },
-{ id: 3, name: "Veg cheese burger", price: 59, image: "https://unsplash.com" },
-{ id: 4, name: "Double patty veg burger", price: 79, image: "https://unsplash.com" },
-{ id: 5, name: "Saffron Burger", price: 99, image: "https://unsplash.com" },
-{ id: 6, name: "French fries", priceHalf: 45, priceFull: 79, image: "https://unsplash.com" },
-{ id: 7, name: "Chilli potato", priceHalf: 59, priceFull: 109, image: "https://unsplash.com" },
-{ id: 8, name: "Honey chilli potato", priceHalf: 69, priceFull: 119, image: "https://unsplash.com" },
-{ id: 9, name: "Plain Veg Noodles", priceHalf: 59, priceFull: 109, image: "https://unsplash.com" },
-{ id: 10, name: "Veg Hakka Noodles", priceHalf: 69, priceFull: 119, image: "https://unsplash.com" },
-{ id: 11, name: "Veg Schezwan Noodles", priceHalf: 79, priceFull: 139, image: "https://unsplash.com" },
-{ id: 12, name: "Veg Chilli Garlic Noodle", priceHalf: 89, priceFull: 159, image: "https://unsplash.com" }
-]},
-{ category: "SANDWICHES", items: [
-{ id: 13, name: "Aloo Grilled sandwich", price: 49, image: "https://unsplash.com" },
-{ id: 14, name: "Veg grilled sandwich", price: 69, image: "https://unsplash.com" },
-{ id: 15, name: "Veg cheese grilled sandwich", price: 79, image: "https://unsplash.com" },
-{ id: 16, name: "Cheese Corn Grilled Sandwich", price: 89, image: "https://unsplash.com" },
-{ id: 17, name: "Paneer & cheese Grilled Sandwich", price: 99, image: "https://unsplash.com" }
-]},
-{ category: "PASTA", items: [
-{ id: 18, name: "veg Red souce pasta", price: 59, image: "https://unsplash.com" },
-{ id: 19, name: "veg white souce pasta", price: 69, image: "https://unsplash.com" }
-]},
-{ category: "MOMOS", items: [
-{ id: 20, name: "veg momos steam", priceHalf: 39, priceFull: 69, image: "https://unsplash.com" },
-{ id: 21, name: "veg momos fried", priceHalf: 49, priceFull: 79, image: "https://unsplash.com" },
-{ id: 22, name: "paneer momos steam", priceHalf: 49, priceFull: 89, image: "https://unsplash.com" },
-{ id: 23, name: "paneer momos fried", priceHalf: 69, priceFull: 119, image: "https://unsplash.com" }
-]},
-{ category: "PARATHA'S", items: [
-{ id: 24, name: "Aloo paratha (2pc)", price: 49, image: "https://unsplash.com" },
-{ id: 25, name: "Aloo pyaz paratha (2pc)", price: 59, image: "https://unsplash.com" },
-{ id: 26, name: "Gobhi paratha (2pc)", price: 69, image: "https://unsplash.com" },
-{ id: 27, name: "paneer paratha (2pc)", price: 79, image: "https://unsplash.com" },
-{ id: 28, name: "Plain curd", price: 20, image: "https://unsplash.com" },
-{ id: 29, name: "Boondi Raita", price: 39, image: "https://unsplash.com" },
-{ id: 30, name: "Sweet lassi", price: 49, image: "https://unsplash.com" }
-]},
-{ category: "MAGGI", items: [
-{ id: 31, name: "Plain maggi", price: 39, image: "https://unsplash.com" },
-{ id: 32, name: "Veg maggi", price: 49, image: "https://unsplash.com" }
-]},
-{ category: "RICE", items: [
-{ id: 33, name: "Veg fried rice", priceHalf: 59, priceFull: 109, image: "https://unsplash.com" },
-{ id: 34, name: "Classic spicy veg fried rice", priceHalf: 69, priceFull: 119, image: "https://unsplash.com" },
-{ id: 35, name: "veg schezwan fried rice", priceHalf: 79, priceFull: 149, image: "https://unsplash.com" }
-]},
-{ category: "BEVERAGES", items: [
-{ id: 36, name: "Cold coffee", price: 59, image: "https://unsplash.com" },
-{ id: 37, name: "Sweet lassi", price: 49, image: "https://unsplash.com" }
-]}
+  {
+    category: "APPETIZERS",
+    items: [
+      { id: 1, name: "Aloo tikki burger", price: 39, image: "images/aloo-tikki-burger.jpg" },
+      { id: 2, name: "Classic veg burger", price: 49, image: "images/classic-veg-burger.jpg" },
+      { id: 3, name: "Veg cheese burger", price: 59, image: "images/veg-cheese-burger.jpg" },
+      { id: 4, name: "Double patty veg burger", price: 79, image: "images/double-patty-veg-burger.jpg" },
+      { id: 5, name: "Saffron Burger", price: 99, image: "images/saffron-burger.jpg" },
+      { id: 6, name: "French fries", priceHalf: 45, priceFull: 79, image: "images/french-fries.jpg" },
+      { id: 7, name: "Chilli potato", priceHalf: 59, priceFull: 109, image: "images/chilli-potato.jpg" },
+      { id: 8, name: "Honey chilli potato", priceHalf: 69, priceFull: 119, image: "images/honey-chilli-potato.jpg" },
+      { id: 9, name: "Plain Veg Noodles", priceHalf: 59, priceFull: 109, image: "images/plain-veg-noodles.jpg" },
+      { id: 10, name: "Veg Hakka Noodles", priceHalf: 69, priceFull: 119, image: "images/veg-hakka-noodles.jpg" },
+      { id: 11, name: "Veg Schezwan Noodles", priceHalf: 79, priceFull: 139, image: "images/veg-schezwan-noodles.jpg" },
+      { id: 12, name: "Veg Chilli Garlic Noodle", priceHalf: 89, priceFull: 159, image: "images/veg-chilli-garlic-noodles.jpg" }
+    ]
+  },
+
+  {
+    category: "SANDWICHES",
+    items: [
+      { id: 13, name: "Aloo Grilled sandwich", price: 49, image: "images/aloo-grilled-sandwich.jpg" },
+      { id: 14, name: "Veg grilled sandwich", price: 69, image: "images/veg-grilled-sandwich.jpg" },
+      { id: 15, name: "Veg cheese grilled sandwich", price: 79, image: "images/veg-cheese-grilled-sandwich.jpg" },
+      { id: 16, name: "Cheese Corn Grilled Sandwich", price: 89, image: "images/cheese-corn-grilled-sandwich.jpg" },
+      { id: 17, name: "Paneer & cheese Grilled Sandwich", price: 99, image: "images/paneer-cheese-grilled-sandwich.jpg" }
+    ]
+  },
+
+  {
+    category: "PASTA",
+    items: [
+      { id: 18, name: "veg Red souce pasta", price: 59, image: "images/veg-red-sauce-pasta.jpg" },
+      { id: 19, name: "veg white souce pasta", price: 69, image: "images/veg-white-sauce-pasta.jpg" }
+    ]
+  },
+
+  {
+    category: "MOMOS",
+    items: [
+      { id: 20, name: "veg momos steam", priceHalf: 39, priceFull: 69, image: "images/veg-momos-steam.jpg" },
+      { id: 21, name: "veg momos fried", priceHalf: 49, priceFull: 79, image: "images/veg-momos-fried.jpg" },
+      { id: 22, name: "paneer momos steam", priceHalf: 49, priceFull: 89, image: "images/paneer-momos-steam.jpg" },
+      { id: 23, name: "paneer momos fried", priceHalf: 69, priceFull: 119, image: "images/paneer-momos-fried.jpg" }
+    ]
+  },
+
+  {
+    category: "PARATHA'S",
+    items: [
+      { id: 24, name: "Aloo paratha (2pc)", price: 49, image: "images/aloo-paratha.jpg" },
+      { id: 25, name: "Aloo pyaz paratha (2pc)", price: 59, image: "images/aloo-pyaz-paratha.jpg" },
+      { id: 26, name: "Gobhi paratha (2pc)", price: 69, image: "images/gobhi-paratha.jpg" },
+      { id: 27, name: "paneer paratha (2pc)", price: 79, image: "images/paneer-paratha.jpg" },
+      { id: 28, name: "Plain curd", price: 20, image: "images/plain-curd.jpg" },
+      { id: 29, name: "Boondi Raita", price: 39, image: "images/Boondi-raita.jpg" },
+      { id: 30, name: "Sweet lassi", price: 49, image: "images/sweet-lassi.jpg" }
+    ]
+  },
+
+  {
+    category: "MAGGI",
+    items: [
+      { id: 31, name: "Plain maggi", price: 39, image: "images/plain-maggi.jpg" },
+      { id: 32, name: "Veg maggi", price: 49, image: "images/veg-maggi.jpg" }
+    ]
+  },
+
+  {
+    category: "RICE",
+    items: [
+      { id: 33, name: "Veg fried rice", priceHalf: 59, priceFull: 109, image: "images/veg-fried-rice.jpg" },
+      { id: 34, name: "Classic spicy veg fried rice", priceHalf: 69, priceFull: 119, image: "images/classic-spicy-veg-fried-rice.jpg" },
+      { id: 35, name: "veg schezwan fried rice", priceHalf: 79, priceFull: 149, image: "images/veg-schezwan-fried-rice.jpg" }
+    ]
+  },
+
+  {
+    category: "BEVERAGES",
+    items: [
+      { id: 36, name: "Cold coffee", price: 59, image: "images/cold-coffee.jpg" },
+      { id: 37, name: "Sweet lassi", price: 49, image: "images/sweet-lassi.jpg" }
+    ]
+  }
 ];
 
 let cart = [];
-
 function renderMenu() {
   const container = document.getElementById('menu-container');
   container.innerHTML = menuData.map(section => `
