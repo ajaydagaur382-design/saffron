@@ -952,9 +952,8 @@ PRICE
 .promo-slide img {
     display: block;
     width: 100%;
-    height: 120px;
-    aspect-ratio: auto;
-    object-fit: cover;
+    height: auto;
+    object-fit: contain;
 }
 
 /* =========================
@@ -969,8 +968,9 @@ PRICE
 }
 
     .promo-track {
-        gap: 0;
-    }
+    gap: 0;
+    transition: transform 1s ease;
+}
 
     .promo-slide {
         flex: 0 0 100%;
@@ -1058,6 +1058,59 @@ PRICE
 
     </div>
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    console.log("PROMO JS LOADED");
+
+    const slider = document.querySelector(".promo-slider");
+    const track = document.querySelector(".promo-track");
+    const slides = document.querySelectorAll(".promo-slide");
+
+    let currentSlide = 0;
+    const originalSlideCount = slides.length;
+
+    const firstSlideClone = slides[0].cloneNode(true);
+    track.appendChild(firstSlideClone);
+
+    function moveSlider() {
+
+        if (window.innerWidth <= 600) {
+
+            currentSlide++;
+
+            const slideWidth = slides[0].clientWidth;
+
+            track.style.transform =
+                `translateX(-${currentSlide * slideWidth}px)`;
+
+            if (currentSlide === originalSlideCount) {
+
+                setTimeout(function () {
+
+                    track.style.transition = "none";
+                    currentSlide = 0;
+
+                    track.style.transform = "translateX(0)";
+
+                    track.offsetHeight;
+
+                    track.style.transition = "transform 0.3s ease";
+
+                }, 300);
+            }
+
+        } else {
+
+            currentSlide = 0;
+            track.style.transform = "translateX(0)";
+        }
+    }
+
+    setInterval(moveSlider, 1000);
+
+});
+</script>
 <div id="menu-container"></div>
 <div style="text-align:center; color:#555; padding:20px;">Powered by SEFFRON</div>
 <!-- 🚨 1. HALF/FULL POPUP BOX (Vaisa hi rahega) -->
@@ -1112,7 +1165,10 @@ background: #f9f9f9; border: 1px solid #eee; border-radius: 14px; padding: 12px;
     <span style="font-size: 22px; display: block; margin-bottom: 2px;">🕒</span>History
   </a>
   <a href="#" onclick="toggleCart(true); return false;" style="text-decoration: none; color: #1a1a1a; text-align: center; font-size: 11px; font-family: sans-serif; font-weight: bold; flex: 1;">
-    <span style="font-size: 22px; display: block; margin-bottom: 2px;">🛒</span>Cart (<span id="cart-count">0</span>)
+    <span style="font-size: 22px; display: block; margin-bottom: 2px;">🛒</span>
+<span style="font-size: 11px !important; color: #222 !important; font-weight: 700 !important;">
+    Cart <span id="cart-count">0</span>
+</span>
   </a>
   <a href="#" onclick="toggleProfileScreen(true); return false;" style="text-decoration: none; color: #1a1a1a; text-align: center; font-size: 11px; font-family: sans-serif; font-weight: bold; flex: 1;">
     <span style="font-size: 22px; display: block; margin-bottom: 2px;">👤</span>Profile
