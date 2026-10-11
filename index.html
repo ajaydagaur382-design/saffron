@@ -979,9 +979,9 @@ PRICE
 
     .promo-slide img {
     width: 100%;
-    height: 120px;
+    height: auto;
     aspect-ratio: auto;
-    object-fit: fill;
+    object-fit: contain;
 }
 }
 </style>
@@ -1374,8 +1374,7 @@ navBar.style.transform = 'translate(-50%, 0)'; // बार वापस आ ज
 </div>
 
 <script>
-const G_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxW1YSTEivO58w8rEsFHrHrDmCAIpZOyw5rznT9Bul07Mo0DDEVpv0b2azvXlQ0t-qO/exec';
-
+const G_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyluT87zj7h9N3lJBXclAOnYJZmiJLX3fhsMxI4lo1JsfhI3S6tjsA_yEYImZlDARi0/exec";
 window.onload = function() {
 renderMenu();
 };
@@ -1821,6 +1820,51 @@ window.addEventListener('DOMContentLoaded', autoFillCheckoutFields);
     </div>
   </div>
 </div>
+<script>
+// Sidebar Toggle (Open / Close) Logic
+function toggleSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebar-overlay');
+    
+    if (sidebar.classList.contains('active')) {
+        sidebar.classList.remove('active');
+        if (overlay) overlay.style.display = 'none';
+    } else {
+        sidebar.classList.add('active');
+        if (overlay) overlay.style.display = 'block';
+    }
+}
 
+// Menu Button Click Event Listener
+document.addEventListener("DOMContentLoaded", function () {
+    var menuBtn = document.querySelector('.menu-btn');
+    if (menuBtn) {
+        menuBtn.setAttribute('onclick', 'toggleSidebar()');
+    }
+});
+</script>
+<script>
+  // Global scope mein function define kar rahe hain taaki console se bhi chal sake
+  window.updateSalesDashboard = async function() {
+    const dtdEl = document.getElementById('dtd-value');
+    const mtdEl = document.getElementById('mtd-value');
+
+    try {
+      const res = await fetch(G_SCRIPT_URL);
+      const data = await res.json();
+
+      const dtdVal = data.dtd !== undefined ? data.dtd : 0;
+      const mtdVal = data.mtd !== undefined ? data.mtd : 0;
+
+      if (dtdEl) dtdEl.innerText = `₹${dtdVal.toLocaleString('en-IN')}`;
+      if (mtdEl) mtdEl.innerText = `₹${mtdVal.toLocaleString('en-IN')}`;
+    } catch (e) {
+      console.error("Sales fetch error:", e);
+    }
+  };
+
+  // Page load hote hi sales fetch karo
+  document.addEventListener('DOMContentLoaded', updateSalesDashboard);
+</script>
 </body>
 </html>
