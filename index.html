@@ -162,10 +162,6 @@ header h1 {
     text-transform: uppercase;
 }
 
-/* =========================
-   FOOD GRID
-   ========================= */
-
 .menu-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -173,12 +169,9 @@ header h1 {
     width: 100%;
 }
 
-/* =========================
-   FOOD CARD
-   ========================= */
-
 .menu-item {
     width: 100%;
+    box-sizing: border-box;
     min-height: 140px;
 
     display: grid !important;
@@ -1124,7 +1117,7 @@ document.addEventListener("DOMContentLoaded", function () {
     Add to Cart
 </button>
 
-<button onclick="document.getElementById('size-popup').style.display='none'" style="width: 100%; background: #ff4757; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer;">Close</button>
+<button onclick="document.getElementById('size-popup').style.display='none'" style="width: 100%; background: linear-gradient(135deg, #e4c477, #c99b43); color: #5b1111; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer;">Close</button>
 </div>
 </div>
 
@@ -1538,10 +1531,11 @@ function openSizePopup(item) {
     popup.style.alignItems = 'center';
     popup.style.justifyContent = 'center';
     popup.style.padding = '20px';
+    popup.style.boxSizing = 'border-box';
     popup.style.zIndex = '10010';
 
     // Premium popup styling
-    panel.style.width = '100%';
+    panel.style.width = 'calc(100% - 32px)';
     panel.style.maxWidth = '460px';
     panel.style.marginBottom = '0';
     panel.style.borderRadius = '24px';
@@ -1620,10 +1614,7 @@ function openSizePopup(item) {
 
 }
 
-
-
 let popupSelections = {};
-
 
 function selectFromPopup(id, size) {
     const list = document.getElementById('size-options-list');
